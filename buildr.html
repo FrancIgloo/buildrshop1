@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BUILDR™ — websites for humans (v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Space+Mono:wght@400;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,700&family=Archivo+Black&family=Playfair+Display:wght@400;700;900&family=DM+Serif+Display&family=Inter:wght@300;400;600;800&family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f3ecd9; --cream-2:#e8dfc4; --ink:#141212;
+    --tangerine:#ff5c1f; --electric:#2947ff; --chart:#f7c948;
+    --mint:#7cd3a8; --pink:#ff7fb2;
+    --shadow:8px 8px 0 var(--ink); --shadow-sm:4px 4px 0 var(--ink);
+    --border:3px solid var(--ink); --border-thick:5px solid var(--ink);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--cream);color:var(--ink);font-family:'Space Mono',monospace;overflow-x:hidden;}
+  body{background-image:radial-gradient(var(--ink) 1px,transparent 1px);background-size:24px 24px;min-height:100vh;}
+
+  .shell{max-width:1280px;margin:0 auto;padding:28px 24px 80px;}
+  header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:var(--ink);color:var(--cream);border:var(--border);box-shadow:var(--shadow);transform:rotate(-.4deg);margin-bottom:36px;}
+  header.top .logo{font-family:'Bagel Fat One';font-size:30px;letter-spacing:1px;color:var(--chart);text-shadow:3px 3px 0 var(--tangerine);}
+  header.top .logo sup{font-size:12px;color:var(--cream);}
+  header.top .tag{font-size:12px;text-transform:uppercase;letter-spacing:2px;opacity:.8;}
+  .testing-badge{background:var(--tangerine);color:var(--ink);padding:4px 10px;font-family:'Bagel Fat One';font-size:12px;margin-left:10px;border:2px solid var(--cream);}
+
+  .price-pill{position:absolute;right:-8px;top:12px;background:var(--tangerine);color:var(--ink);border:var(--border);box-shadow:var(--shadow-sm);padding:10px 18px;font-family:'Bagel Fat One';font-size:18px;transform:rotate(8deg);z-index:5;}
+
+  .hero{position:relative;padding:20px 0 40px;}
+  .hero h1{font-family:'Bagel Fat One';font-size:clamp(48px,8vw,110px);line-height:.9;letter-spacing:-2px;}
+  .hero h1 .hl{background:var(--electric);color:var(--cream);padding:0 14px;transform:rotate(-2deg);display:inline-block;box-shadow:var(--shadow-sm);}
+  .hero h1 .hl2{background:var(--tangerine);color:var(--ink);padding:0 14px;transform:rotate(2deg);display:inline-block;box-shadow:var(--shadow-sm);}
+  .hero p.lede{margin-top:24px;max-width:620px;font-size:18px;line-height:1.55;background:var(--cream-2);padding:14px 18px;border:var(--border);box-shadow:var(--shadow-sm);}
+  .hero .sticker{position:absolute;right:4%;top:0;width:160px;height:160px;border-radius:50%;background:var(--mint);color:var(--ink);display:grid;place-items:center;text-align:center;font-family:'Bagel Fat One';font-size:15px;line-height:1.05;border:var(--border);box-shadow:var(--shadow);transform:rotate(-12deg);animation:spin 22s linear infinite;}
+  @keyframes spin{to{transform:rotate(348deg);}}
+
+  .cta-row{display:flex;flex-wrap:wrap;gap:16px;margin-top:30px;align-items:center;}
+  .btn{font-family:'Bagel Fat One';font-size:20px;padding:14px 26px;border:var(--border);cursor:pointer;background:var(--ink);color:var(--cream);box-shadow:var(--shadow-sm);transition:transform .08s,box-shadow .08s;letter-spacing:.5px;}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink);}
+  .btn:active{transform:translate(2px,2px);box-shadow:none;}
+  .btn.primary{background:var(--tangerine);color:var(--ink);}
+  .btn.ghost{background:var(--cream);color:var(--ink);}
+  .btn.mini{font-size:14px;padding:8px 14px;font-family:'Space Mono';font-weight:700;}
+
+  .marquee{margin-top:30px;overflow:hidden;border-top:var(--border);border-bottom:var(--border);background:var(--electric);color:var(--cream);padding:10px 0;}
+  .marquee-inner{display:inline-block;white-space:nowrap;animation:slide 28s linear infinite;font-family:'Bagel Fat One';font-size:22px;letter-spacing:2px;}
+  .marquee-inner span{margin-right:40px;}
+  .marquee-inner span::before{content:"★ ";color:var(--chart);}
+  @keyframes slide{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  .builder-wrap{margin-top:64px;position:relative;}
+  .builder-split{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start;}
+  .builder{background:var(--cream);border:var(--border-thick);box-shadow:12px 12px 0 var(--ink);padding:28px;position:relative;}
+  .builder .frame-label{position:absolute;top:-18px;left:24px;background:var(--ink);color:var(--chart);padding:6px 14px;font-family:'Bagel Fat One';font-size:14px;letter-spacing:2px;}
+
+  .preview-col{position:sticky;top:20px;}
+  .preview-frame{background:var(--cream);border:var(--border-thick);box-shadow:12px 12px 0 var(--ink);overflow:hidden;position:relative;}
+  .preview-frame .frame-label{position:absolute;top:-18px;left:24px;background:var(--ink);color:var(--mint);padding:6px 14px;font-family:'Bagel Fat One';font-size:14px;letter-spacing:2px;z-index:10;}
+  .preview-browser{background:var(--cream-2);border-bottom:var(--border);padding:10px 14px;display:flex;align-items:center;gap:8px;}
+  .preview-browser .dots{display:flex;gap:6px;}
+  .preview-browser .dots span{width:12px;height:12px;border-radius:50%;display:block;}
+  .preview-browser .dots span:nth-child(1){background:#ff5c5c;}
+  .preview-browser .dots span:nth-child(2){background:var(--chart);}
+  .preview-browser .dots span:nth-child(3){background:var(--mint);}
+  .preview-browser .url{flex:1;margin-left:10px;background:var(--cream);border:2px solid var(--ink);padding:4px 10px;font-family:'Space Mono';font-size:12px;}
+  .preview-stage{min-height:620px;overflow:hidden;position:relative;}
+  .preview-empty{padding:60px 30px;text-align:center;opacity:.6;}
+
+  .progress{display:flex;gap:4px;margin-bottom:24px;}
+  .progress .bar{flex:1;height:12px;background:var(--cream-2);border:2px solid var(--ink);}
+  .progress .bar.done{background:var(--tangerine);}
+  .progress .bar.current{background:repeating-linear-gradient(45deg,var(--electric),var(--electric) 6px,var(--cream) 6px,var(--cream) 12px);}
+
+  .step-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+  .step-num{font-family:'Bagel Fat One';font-size:28px;color:var(--electric);-webkit-text-stroke:1.5px var(--ink);}
+  .step-kicker{font-size:11px;letter-spacing:2px;text-transform:uppercase;background:var(--ink);color:var(--cream);padding:4px 8px;}
+  .question{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(24px,3vw,34px);line-height:1.05;margin:8px 0 6px;}
+  .help{font-size:13px;opacity:.75;margin-bottom:20px;}
+
+  .options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .options.three{grid-template-columns:repeat(3,minmax(0,1fr));}
+  .opt{background:var(--cream-2);border:var(--border);padding:12px 14px;box-shadow:var(--shadow-sm);cursor:pointer;text-align:left;transition:transform .1s,box-shadow .1s,background .1s;position:relative;}
+  .opt:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink);background:var(--cream);}
+  .opt.selected{background:var(--tangerine);}
+  .opt.selected::after{content:"✓";position:absolute;top:-10px;right:-10px;background:var(--ink);color:var(--chart);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;border:2px solid var(--ink);font-size:14px;}
+  .opt .emoji{font-size:22px;display:block;margin-bottom:4px;}
+  .opt .label{font-family:'Fraunces',serif;font-weight:900;font-size:16px;}
+  .opt .sub{font-size:11px;opacity:.7;margin-top:2px;}
+
+  .text-input,textarea{width:100%;font-family:'Space Mono';font-size:16px;padding:14px;border:var(--border);background:var(--cream-2);box-shadow:var(--shadow-sm);outline:none;}
+  .text-input:focus,textarea:focus{background:var(--cream);box-shadow:6px 6px 0 var(--electric);}
+  textarea{min-height:110px;resize:vertical;font-family:'Fraunces',serif;font-size:16px;line-height:1.5;}
+
+  .palette-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  .pal{border:var(--border);padding:10px;background:var(--cream);box-shadow:var(--shadow-sm);cursor:pointer;}
+  .pal:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink);}
+  .pal.selected{outline:4px solid var(--ink);outline-offset:3px;}
+  .pal .swatches{display:flex;height:36px;border:2px solid var(--ink);margin-bottom:6px;}
+  .pal .swatches span{flex:1;}
+  .pal .name{font-family:'Bagel Fat One';font-size:15px;}
+  .pal .mood{font-size:10px;opacity:.7;}
+
+  .custom-palette{margin-top:14px;background:var(--cream-2);border:var(--border);padding:12px;box-shadow:var(--shadow-sm);}
+  .custom-palette .cp-title{font-family:'Bagel Fat One';font-size:14px;margin-bottom:8px;}
+  .cp-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .cp-swatch{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;}
+  .cp-swatch input[type=color]{width:44px;height:44px;border:2px solid var(--ink);cursor:pointer;padding:0;background:none;}
+
+  .nav{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px;flex-wrap:wrap;}
+  .step-count{font-family:'Space Mono';font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.7;}
+
+  .summary{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .sum-item{background:var(--cream-2);border:var(--border);padding:10px 12px;box-shadow:var(--shadow-sm);}
+  .sum-item .k{font-size:10px;letter-spacing:2px;text-transform:uppercase;opacity:.6;}
+  .sum-item .v{font-family:'Fraunces',serif;font-weight:700;font-size:15px;margin-top:3px;}
+  .sum-item.full{grid-column:1/-1;}
+
+  .checkout-box{background:var(--ink);color:var(--cream);padding:18px;border:var(--border);box-shadow:var(--shadow);margin-top:16px;}
+  .checkout-box h3{font-family:'Bagel Fat One';font-size:22px;color:var(--chart);margin-bottom:10px;}
+  .tier-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;}
+  .tier{background:var(--cream);color:var(--ink);padding:12px;border:2px solid var(--cream);cursor:pointer;transition:transform .1s;}
+  .tier:hover{transform:translateY(-3px);}
+  .tier.selected{border:3px solid var(--tangerine);background:var(--chart);}
+  .tier .tname{font-family:'Bagel Fat One';font-size:15px;}
+  .tier .tprice{font-family:'Fraunces',serif;font-weight:900;font-size:22px;margin:2px 0;}
+  .tier .tprice small{font-size:11px;font-weight:400;font-style:italic;}
+  .tier ul{list-style:none;font-size:10px;line-height:1.5;margin-top:6px;}
+  .tier ul li::before{content:"▸ ";color:var(--tangerine);font-weight:700;}
+  .fine{font-size:10px;opacity:.6;margin-top:12px;line-height:1.5;}
+
+  .done-screen{text-align:center;padding:30px 20px;}
+  .done-screen .huge{font-family:'Bagel Fat One';font-size:clamp(50px,8vw,110px);line-height:.9;color:var(--tangerine);-webkit-text-stroke:3px var(--ink);transform:rotate(-2deg);display:inline-block;}
+  .receipt{max-width:460px;margin:24px auto;background:var(--cream-2);border:var(--border);padding:18px;box-shadow:var(--shadow);text-align:left;font-family:'Space Mono';font-size:13px;line-height:1.7;position:relative;}
+  .receipt::before,.receipt::after{content:"";position:absolute;left:0;right:0;height:14px;background:radial-gradient(circle at 7px 0,transparent 0 7px,var(--cream-2) 7px);background-size:14px 14px;}
+  .receipt::before{top:-14px;transform:scaleY(-1);} .receipt::after{bottom:-14px;}
+  .receipt .rtitle{font-family:'Bagel Fat One';font-size:16px;margin-bottom:6px;}
+  .receipt .rline{display:flex;justify-content:space-between;border-bottom:1px dashed var(--ink);padding:3px 0;}
+  .receipt .rtotal{display:flex;justify-content:space-between;font-family:'Bagel Fat One';font-size:18px;margin-top:8px;}
+
+  footer.foot{margin-top:60px;padding:20px;border:var(--border);background:var(--ink);color:var(--cream);display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:12px;letter-spacing:1px;}
+  .fade-in{animation:fade .3s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  @media (max-width:980px){.builder-split{grid-template-columns:1fr;}.preview-col{position:static;}}
+  @media (max-width:720px){.options,.options.three{grid-template-columns:1fr;}.palette-grid{grid-template-columns:1fr;}.summary{grid-template-columns:1fr;}.tier-row{grid-template-columns:1fr;}.hero .sticker{width:110px;height:110px;font-size:12px;top:auto;bottom:-20px;right:10px;}.builder{padding:20px 16px;}}
+
+  /* ===== 6 PREVIEW TEMPLATES ===== */
+  .preview-stage{--p1:#ff5c1f;--p2:#f7c948;--p3:#f3ecd9;--p4:#141212;}
+
+  .tpl-retro{background:var(--p3);color:var(--p4);padding:24px;min-height:620px;font-family:'Space Mono';}
+  .tpl-retro .nav-r{display:flex;justify-content:space-between;border-bottom:3px solid var(--p4);padding-bottom:10px;font-family:'Bagel Fat One';font-size:14px;}
+  .tpl-retro .logo-r{color:var(--p1);text-shadow:2px 2px 0 var(--p4);}
+  .tpl-retro h1{font-family:'Bagel Fat One';font-size:48px;line-height:.9;margin:30px 0 12px;letter-spacing:-1px;}
+  .tpl-retro h1 span{background:var(--p1);color:var(--p3);padding:0 8px;display:inline-block;box-shadow:4px 4px 0 var(--p4);}
+  .tpl-retro .tag-r{background:var(--p2);color:var(--p4);padding:10px 14px;border:3px solid var(--p4);box-shadow:4px 4px 0 var(--p4);max-width:85%;font-size:13px;line-height:1.4;}
+  .tpl-retro .grid-r{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:24px;}
+  .tpl-retro .grid-r>div{border:3px solid var(--p4);padding:14px;height:70px;display:grid;place-items:center;font-family:'Bagel Fat One';font-size:13px;text-align:center;}
+  .tpl-retro .grid-r>div:nth-child(1){background:var(--p1);color:var(--p3);}
+  .tpl-retro .grid-r>div:nth-child(2){background:var(--p2);}
+  .tpl-retro .btn-r{margin-top:18px;display:inline-block;background:var(--p4);color:var(--p3);padding:10px 20px;font-family:'Bagel Fat One';box-shadow:4px 4px 0 var(--p1);}
+
+  .tpl-minimal{background:var(--p3);color:var(--p4);padding:50px 40px;min-height:620px;font-family:'Inter';font-weight:300;}
+  .tpl-minimal .nav-m{display:flex;justify-content:space-between;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:50px;opacity:.6;}
+  .tpl-minimal .logo-m{font-family:'DM Serif Display';font-size:18px;opacity:1;letter-spacing:0;}
+  .tpl-minimal h1{font-family:'DM Serif Display';font-size:48px;line-height:1.05;margin-bottom:24px;max-width:90%;}
+  .tpl-minimal .tag-m{font-size:14px;line-height:1.7;max-width:70%;opacity:.75;}
+  .tpl-minimal .hr-m{height:1px;background:var(--p4);opacity:.15;margin:36px 0;}
+  .tpl-minimal .grid-m{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+  .tpl-minimal .grid-m h4{font-family:'DM Serif Display';font-size:17px;margin-bottom:6px;}
+  .tpl-minimal .grid-m p{font-size:12px;line-height:1.6;opacity:.7;}
+  .tpl-minimal .btn-m{margin-top:18px;display:inline-block;border-bottom:1px solid var(--p4);padding-bottom:2px;font-size:12px;letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+
+  .tpl-brutalist{background:var(--p3);color:var(--p4);padding:0;min-height:620px;font-family:'Archivo Black';}
+  .tpl-brutalist .nav-b{background:var(--p4);color:var(--p3);padding:14px 20px;display:flex;justify-content:space-between;font-size:13px;letter-spacing:2px;}
+  .tpl-brutalist .hero-b{padding:26px 20px;border-bottom:6px solid var(--p4);}
+  .tpl-brutalist h1{font-size:58px;line-height:.85;letter-spacing:-2px;text-transform:uppercase;}
+  .tpl-brutalist h1 em{font-style:normal;background:var(--p1);color:var(--p3);padding:0 6px;}
+  .tpl-brutalist .tag-b{margin-top:14px;font-family:'Space Mono';font-size:13px;line-height:1.5;max-width:85%;font-weight:700;text-transform:uppercase;}
+  .tpl-brutalist .blocks-b{display:grid;grid-template-columns:1fr 1fr;}
+  .tpl-brutalist .blocks-b>div{padding:20px;border-right:6px solid var(--p4);border-bottom:6px solid var(--p4);font-size:13px;line-height:1.4;}
+  .tpl-brutalist .blocks-b>div:nth-child(1){background:var(--p1);color:var(--p3);}
+  .tpl-brutalist .blocks-b>div:nth-child(2){background:var(--p2);border-right:none;}
+  .tpl-brutalist .blocks-b>div:nth-child(3){background:var(--p4);color:var(--p3);border-bottom:none;}
+  .tpl-brutalist .blocks-b>div:nth-child(4){background:var(--p3);border-right:none;border-bottom:none;}
+  .tpl-brutalist .num-b{font-size:40px;line-height:1;margin-bottom:6px;}
+
+  .tpl-editorial{background:var(--p3);color:var(--p4);padding:36px;min-height:620px;font-family:'Fraunces',serif;}
+  .tpl-editorial .nav-e{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid var(--p4);padding-bottom:10px;font-family:'Inter';font-size:11px;letter-spacing:3px;text-transform:uppercase;}
+  .tpl-editorial .logo-e{font-family:'Playfair Display';font-weight:900;font-style:italic;font-size:20px;letter-spacing:0;}
+  .tpl-editorial .kicker-e{font-family:'Inter';font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--p1);font-weight:800;margin:26px 0 10px;}
+  .tpl-editorial h1{font-family:'Playfair Display';font-weight:900;font-size:48px;line-height:1;letter-spacing:-1px;margin-bottom:14px;}
+  .tpl-editorial h1 em{color:var(--p1);}
+  .tpl-editorial .tag-e{font-family:'Fraunces';font-style:italic;font-size:16px;line-height:1.5;max-width:85%;border-left:3px solid var(--p1);padding-left:14px;margin-bottom:24px;}
+  .tpl-editorial .cols-e{column-count:2;column-gap:22px;font-size:12px;line-height:1.7;}
+  .tpl-editorial .cols-e p::first-letter{font-family:'Playfair Display';font-size:38px;font-weight:900;float:left;line-height:.9;margin-right:6px;color:var(--p1);}
+  .tpl-editorial .btn-e{margin-top:18px;display:inline-block;background:var(--p4);color:var(--p3);padding:10px 22px;font-family:'Inter';font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:800;}
+
+  .tpl-playful{background:var(--p3);color:var(--p4);padding:26px 22px;min-height:620px;font-family:'Inter';position:relative;overflow:hidden;}
+  .tpl-playful::before{content:"";position:absolute;width:120px;height:120px;background:var(--p1);border-radius:50%;top:-30px;right:-30px;}
+  .tpl-playful::after{content:"";position:absolute;width:80px;height:80px;background:var(--p2);border-radius:50%;bottom:40px;left:-20px;}
+  .tpl-playful .nav-p{display:flex;justify-content:space-between;position:relative;z-index:1;font-size:12px;}
+  .tpl-playful .logo-p{font-family:'Caveat';font-weight:700;font-size:26px;color:var(--p1);}
+  .tpl-playful h1{font-family:'Caveat';font-weight:700;font-size:62px;line-height:.95;margin:24px 0 10px;position:relative;z-index:1;}
+  .tpl-playful h1 span{color:var(--p1);transform:rotate(-2deg);display:inline-block;}
+  .tpl-playful .tag-p{font-size:14px;line-height:1.6;max-width:80%;position:relative;z-index:1;}
+  .tpl-playful .bubbles{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;position:relative;z-index:1;}
+  .tpl-playful .bubbles>div{background:var(--p3);border:3px solid var(--p4);padding:10px 16px;border-radius:999px;font-weight:600;font-size:12px;box-shadow:3px 3px 0 var(--p4);}
+  .tpl-playful .bubbles>div:nth-child(odd){background:var(--p2);}
+  .tpl-playful .bubbles>div:nth-child(3n){background:var(--p1);color:var(--p3);}
+  .tpl-playful .btn-p{margin-top:24px;display:inline-block;background:var(--p1);color:var(--p3);padding:12px 24px;border-radius:999px;font-weight:700;box-shadow:4px 4px 0 var(--p4);border:3px solid var(--p4);position:relative;z-index:1;}
+
+  .tpl-dark{background:#0d0d14;color:#e8e8f0;padding:28px 22px;min-height:620px;font-family:'Space Mono';position:relative;overflow:hidden;}
+  .tpl-dark::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,var(--p1) 0%,transparent 40%),radial-gradient(circle at 80% 70%,var(--p2) 0%,transparent 40%);opacity:.25;filter:blur(30px);pointer-events:none;}
+  .tpl-dark .nav-d{display:flex;justify-content:space-between;font-size:11px;letter-spacing:3px;text-transform:uppercase;position:relative;z-index:1;}
+  .tpl-dark .logo-d{font-family:'Archivo Black';color:var(--p1);letter-spacing:2px;text-shadow:0 0 20px var(--p1);}
+  .tpl-dark h1{font-family:'Archivo Black';font-size:50px;line-height:1;margin:36px 0 14px;letter-spacing:-1px;text-transform:uppercase;position:relative;z-index:1;}
+  .tpl-dark h1 span{background:linear-gradient(90deg,var(--p1),var(--p2));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .tpl-dark .tag-d{font-size:13px;line-height:1.6;max-width:85%;opacity:.8;position:relative;z-index:1;}
+  .tpl-dark .grid-d{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:26px;position:relative;z-index:1;}
+  .tpl-dark .grid-d>div{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);padding:14px;font-size:11px;}
+  .tpl-dark .grid-d .nnum{color:var(--p1);font-family:'Archivo Black';font-size:24px;margin-bottom:4px;}
+  .tpl-dark .btn-d{margin-top:22px;display:inline-block;background:var(--p1);color:#0d0d14;padding:12px 22px;font-family:'Archivo Black';font-size:11px;letter-spacing:2px;text-transform:uppercase;box-shadow:0 0 30px var(--p1);position:relative;z-index:1;}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="top">
+    <div class="logo">BUILDR<sup>™</sup><span class="testing-badge">TESTING</span></div>
+    <div class="tag">est. 2026 · made by humans</div>
+  </header>
+
+  <section class="hero" id="hero">
+    <div class="price-pill">from $149</div>
+    <h1>
+      <span>YOUR</span> <span class="hl">WEBSITE</span><br/>
+      <span>BUILT</span> <span class="hl2">BY</span> <span>CLICKS.</span>
+    </h1>
+    <p class="lede">Answer 8 quick questions. Watch your site take shape in real time on the right. Tweak colors, swap styles, hit launch.</p>
+    <div class="cta-row">
+      <button class="btn primary" onclick="startBuilder()">START BUILDING →</button>
+      <button class="btn ghost" onclick="document.getElementById('builder').scrollIntoView({behavior:'smooth'})">jump to builder</button>
+    </div>
+    <div class="sticker">LIVE PREVIEW · AS YOU BUILD ·</div>
+  </section>
+
+  <div class="marquee">
+    <div class="marquee-inner">
+      <span>LIVE PREVIEW</span><span>10+ PALETTES</span><span>6 DESIGN STYLES</span><span>CUSTOM COLORS</span><span>MOBILE READY</span>
+      <span>LIVE PREVIEW</span><span>10+ PALETTES</span><span>6 DESIGN STYLES</span><span>CUSTOM COLORS</span><span>MOBILE READY</span>
+    </div>
+  </div>
+
+  <div class="builder-wrap" id="builder">
+    <div class="builder-split">
+      <div class="builder">
+        <div class="frame-label">THE BUILDER</div>
+        <div class="progress" id="progress"></div>
+        <div id="step-container"></div>
+        <div class="nav">
+          <button class="btn mini ghost" id="btn-back" onclick="back()">← BACK</button>
+          <div class="step-count" id="step-count">STEP 1 OF 10</div>
+          <button class="btn mini primary" id="btn-next" onclick="next()">NEXT →</button>
+        </div>
+      </div>
+      <div class="preview-col">
+        <div class="preview-frame">
+          <div class="frame-label">LIVE PREVIEW</div>
+          <div class="preview-browser">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <div class="url" id="preview-url">https://yoursite.buildr.co</div>
+          </div>
+          <div class="preview-stage" id="preview-stage">
+            <div class="preview-empty">
+              <div style="font-family:'Bagel Fat One';font-size:40px;color:var(--tangerine);line-height:.9;margin-bottom:10px;">START<br/>ANSWERING →</div>
+              <div style="font-size:12px;">Your website appears here as you build it.</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;opacity:.6;margin-top:10px;text-align:center;letter-spacing:2px;">PREVIEW UPDATES IN REAL TIME</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="foot">
+    <div>© 2026 BUILDR™ — testing phase</div>
+    <div>feedback welcome · we're building this live</div>
+  </footer>
+</div>
+
+<script>
+const QUESTIONS = [
+  { key:'purpose', kicker:'PURPOSE', q:"What's this website for?", help:"The one-line answer.", type:'choice',
+    options:[
+      {emoji:'💼',label:'Business / Shop',sub:'Sell stuff or services',value:'business'},
+      {emoji:'🎨',label:'Portfolio',sub:'Show off my work',value:'portfolio'},
+      {emoji:'✍️',label:'Blog / Personal',sub:'Writing & thinking',value:'blog'},
+      {emoji:'🚀',label:'Startup Landing',sub:'Launch something new',value:'landing'},
+      {emoji:'🎉',label:'Event / Invite',sub:'Wedding, meetup, party',value:'event'},
+      {emoji:'🤷',label:'Other',sub:'You pick the weird',value:'other'},
+    ]
+  },
+  { key:'name', kicker:'IDENTITY', q:"What do you call it?", help:"Business, project, or your name.", type:'text', placeholder:'e.g. Ruby & Sons Coffee' },
+  { key:'tagline', kicker:'PITCH', q:"In one sentence — what do you do?", help:"No jargon. Just the real thing.", type:'textarea', placeholder:'We roast small-batch coffee in Brooklyn and deliver within 48 hours.' },
+  { key:'vibe', kicker:'STYLE', q:"Pick your design style.", help:"This changes the whole look. Preview updates instantly.", type:'choice',
+    options:[
+      {emoji:'🧃',label:'Funky Retro',sub:'70s/80s bold & weird',value:'retro'},
+      {emoji:'🕊️',label:'Soft Minimal',sub:'Calm, quiet, refined',value:'minimal'},
+      {emoji:'⚡',label:'Brutalist',sub:'Loud, raw, chunky',value:'brutalist'},
+      {emoji:'📰',label:'Editorial',sub:'Magazine-quality',value:'editorial'},
+      {emoji:'🌈',label:'Playful',sub:'Bouncy & fun',value:'playful'},
+      {emoji:'🌑',label:'Dark Neon',sub:'After-hours cinematic',value:'dark'},
+    ]
+  },
+  { key:'palette', kicker:'COLOR', q:"Pick a palette — or make your own.", help:"10 ready combos, plus a custom builder below.", type:'palette',
+    options:[
+      {name:'Sunset Citrus',mood:'warm + energetic',colors:['#ff5c1f','#f7c948','#f3ecd9','#141212'],value:'sunset'},
+      {name:'Cobalt Dream',mood:'electric + confident',colors:['#2947ff','#ff7fb2','#f3ecd9','#141212'],value:'cobalt'},
+      {name:'Forest Floor',mood:'grounded + earthy',colors:['#3d5c3a','#c8a96a','#efe6d2','#1f1a13'],value:'forest'},
+      {name:'Midnight Neon',mood:'after-hours bold',colors:['#ff006e','#00f0ff','#0d0d14','#f3ecd9'],value:'neon'},
+      {name:'Cream & Ink',mood:'timeless + clean',colors:['#141212','#8a8075','#e8dfc4','#f3ecd9'],value:'cream'},
+      {name:'Peach Soda',mood:'soft + friendly',colors:['#ff9b7e','#ffd6a5','#fef6e4','#2a1a10'],value:'peach'},
+      {name:'Ocean Storm',mood:'cool + deep',colors:['#0a3d62','#60a3bc','#f5f6fa','#0c0e1a'],value:'ocean'},
+      {name:'Lilac Mist',mood:'dreamy + gentle',colors:['#9d7fff','#ffd1e8','#f7f3ff','#231547'],value:'lilac'},
+      {name:'Clay Desert',mood:'warm + natural',colors:['#c1684a','#e8c39e','#f5ead7','#2b1810'],value:'clay'},
+      {name:'Electric Lime',mood:'punchy + young',colors:['#c6f432','#ff5cb8','#fffef0','#1a1a1a'],value:'lime'},
+    ]
+  },
+  { key:'pages', kicker:'STRUCTURE', q:"Which pages do you need?", help:"Most sites start with 3–5.", type:'multi',
+    options:[
+      {emoji:'🏠',label:'Home',value:'home'},{emoji:'👋',label:'About',value:'about'},
+      {emoji:'🛠️',label:'Services',value:'services'},{emoji:'🖼️',label:'Portfolio',value:'portfolio'},
+      {emoji:'🛒',label:'Shop',value:'shop'},{emoji:'📝',label:'Blog',value:'blog'},
+      {emoji:'📨',label:'Contact',value:'contact'},{emoji:'❓',label:'FAQ',value:'faq'},
+    ]
+  },
+  { key:'features', kicker:'EXTRAS', q:"Any extras?", help:"Pick whatever's relevant.", type:'multi',
+    options:[
+      {emoji:'💳',label:'Payments',value:'payments'},{emoji:'📬',label:'Newsletter',value:'newsletter'},
+      {emoji:'📅',label:'Booking',value:'booking'},{emoji:'🔍',label:'SEO',value:'seo'},
+      {emoji:'🌐',label:'Custom domain',value:'domain'},{emoji:'📊',label:'Analytics',value:'analytics'},
+      {emoji:'🤖',label:'AI chatbot',value:'chatbot'},{emoji:'✉️',label:'Contact form',value:'form'},
+    ]
+  },
+  { key:'audience', kicker:'REACH', q:"Who's this for?", help:"Your target customer or reader.", type:'text', placeholder:'e.g. 25–40 yr olds who love specialty coffee' },
+  { key:'contact', kicker:'ALMOST DONE', q:"Where do we send the preview?", help:"Name + email. No spam, promise.", type:'contact' }
+];
+
+const TIERS = [
+  { id:'basic',name:'STARTER',price:149,sub:'one-time',perks:['Up to 3 pages','Mobile-ready','Hosted 1 year','1 revision round'] },
+  { id:'pro',name:'PRO',price:349,sub:'one-time',featured:true,perks:['Up to 8 pages','Custom domain','SEO + analytics','3 revisions','Priority turnaround'] },
+  { id:'max',name:'MAXIMALIST',price:899,sub:'one-time',perks:['Unlimited pages','Custom illustrations','E-commerce ready','Unlimited revisions (30d)','Dedicated designer'] }
+];
+
+const state = { stepIdx:0, answers:{customColors:null}, tier:'pro', done:false };
+
+const PALETTE_MAP = {};
+QUESTIONS.find(q=>q.key==='palette').options.forEach(p=>{PALETTE_MAP[p.value]=p.colors;});
+
+function currentPalette(){
+  if(state.answers.customColors) return state.answers.customColors;
+  if(state.answers.palette && PALETTE_MAP[state.answers.palette]) return PALETTE_MAP[state.answers.palette];
+  return ['#ff5c1f','#f7c948','#f3ecd9','#141212'];
+}
+
+function tplRetro(d){return `
+<div class="tpl-retro">
+  <div class="nav-r"><div class="logo-r">${d.name}</div><div>MENU</div></div>
+  <h1>HELLO.<br/>WE'RE <span>${d.nameShort}</span>.</h1>
+  <div class="tag-r">${d.tagline}</div>
+  <div class="grid-r">${d.pages.slice(0,3).map(p=>`<div>${p.toUpperCase()}</div>`).join('')}</div>
+  <div class="btn-r">GET STARTED →</div>
+</div>`;}
+function tplMinimal(d){return `
+<div class="tpl-minimal">
+  <div class="nav-m"><div class="logo-m">${d.name}</div><div>menu · contact</div></div>
+  <h1>${d.tagline?d.tagline.split(' ').slice(0,6).join(' '):d.nameShort+'.'}</h1>
+  <div class="tag-m">${d.tagline}</div>
+  <div class="hr-m"></div>
+  <div class="grid-m">${d.pages.slice(0,2).map(p=>`<div><h4>${p}</h4><p>Thoughtful ${p.toLowerCase()} designed to show your work at its best.</p></div>`).join('')}</div>
+  <div class="btn-m">View work →</div>
+</div>`;}
+function tplBrutalist(d){
+  const pgs=d.pages.slice(0,4);while(pgs.length<4)pgs.push('More');
+  return `
+<div class="tpl-brutalist">
+  <div class="nav-b"><div>${d.name.toUpperCase()}</div><div>EST 2026</div></div>
+  <div class="hero-b">
+    <h1>${d.nameShort.toUpperCase()}<br/>IS <em>LIVE</em>.</h1>
+    <div class="tag-b">${d.tagline}</div>
+  </div>
+  <div class="blocks-b">${pgs.map((p,i)=>`<div><div class="num-b">0${i+1}</div>${p.toUpperCase()}</div>`).join('')}</div>
+</div>`;}
+function tplEditorial(d){return `
+<div class="tpl-editorial">
+  <div class="nav-e"><div class="logo-e">${d.name}</div><div>vol. 01 · 2026</div></div>
+  <div class="kicker-e">FEATURED · ${d.kicker}</div>
+  <h1>${d.nameShort}, <em>reimagined.</em></h1>
+  <div class="tag-e">${d.tagline}</div>
+  <div class="cols-e"><p>In a world full of noise, we believe in craft. Every detail considered, every choice intentional. This is what we stand for, and this is how we work.</p></div>
+  <div class="btn-e">Read more</div>
+</div>`;}
+function tplPlayful(d){
+  const pgs=d.pages.length?d.pages.slice(0,5):['Home','About','Contact'];
+  return `
+<div class="tpl-playful">
+  <div class="nav-p"><div class="logo-p">${d.name} ✨</div><div>say hi!</div></div>
+  <h1>hey,<br/>we're <span>${d.nameShort.toLowerCase()}</span>!</h1>
+  <div class="tag-p">${d.tagline}</div>
+  <div class="bubbles">${pgs.map(p=>`<div>${p}</div>`).join('')}</div>
+  <div class="btn-p">Let's go →</div>
+</div>`;}
+function tplDark(d){
+  const pgs=d.pages.slice(0,3);while(pgs.length<3)pgs.push('More');
+  return `
+<div class="tpl-dark">
+  <div class="nav-d"><div class="logo-d">${d.name.toUpperCase()}</div><div>menu</div></div>
+  <h1>Welcome to<br/><span>${d.nameShort}</span></h1>
+  <div class="tag-d">${d.tagline}</div>
+  <div class="grid-d">${pgs.map((p,i)=>`<div><div class="nnum">0${i+1}</div>${p.toUpperCase()}</div>`).join('')}</div>
+  <div class="btn-d">Enter →</div>
+</div>`;}
+
+const TEMPLATES = { retro:tplRetro, minimal:tplMinimal, brutalist:tplBrutalist, editorial:tplEditorial, playful:tplPlayful, dark:tplDark };
+
+function renderPreview(){
+  const stage = document.getElementById('preview-stage');
+  const a = state.answers;
+  if(!a.name && !a.tagline && !a.vibe && !a.palette && !state.answers.customColors){
+    stage.innerHTML = `<div class="preview-empty">
+      <div style="font-family:'Bagel Fat One';font-size:40px;color:var(--tangerine);line-height:.9;margin-bottom:10px;">START<br/>ANSWERING →</div>
+      <div style="font-size:12px;">Your website appears here as you build it.</div>
+    </div>`;
+    return;
+  }
+  const [p1,p2,p3,p4] = currentPalette();
+  stage.style.setProperty('--p1',p1);stage.style.setProperty('--p2',p2);
+  stage.style.setProperty('--p3',p3);stage.style.setProperty('--p4',p4);
+
+  const name = a.name||'YOUR BRAND';
+  const nameShort = (name.split(' ')[0]||name).slice(0,16);
+  const tagline = a.tagline||'A short, sharp description of what you do and why people should care.';
+  const pagesDef = QUESTIONS.find(q=>q.key==='pages').options;
+  const pageLabels = (a.pages||['home','about','contact']).map(v=>{
+    const o=pagesDef.find(x=>x.value===v); return o?o.label:v;
+  });
+  const kicker = (QUESTIONS.find(q=>q.key==='purpose').options.find(o=>o.value===a.purpose)||{}).label || 'A NEW CHAPTER';
+
+  const data = { name:name.toUpperCase().slice(0,24), nameShort, tagline, pages:pageLabels, kicker:kicker.toUpperCase() };
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'yoursite';
+  document.getElementById('preview-url').textContent = `https://${slug}.buildr.co`;
+
+  const tpl = TEMPLATES[a.vibe]||TEMPLATES.retro;
+  stage.innerHTML = tpl(data);
+  stage.classList.remove('fade-in');void stage.offsetWidth;stage.classList.add('fade-in');
+}
+
+function totalSteps(){return QUESTIONS.length+1;}
+
+function renderProgress(){
+  const p = document.getElementById('progress');p.innerHTML='';
+  for(let i=0;i<totalSteps();i++){
+    const b=document.createElement('div');
+    b.className='bar'+(i<state.stepIdx?' done':(i===state.stepIdx?' current':''));
+    p.appendChild(b);
+  }
+  document.getElementById('step-count').textContent = `STEP ${Math.min(state.stepIdx+1,totalSteps())} OF ${totalSteps()}`;
+  document.getElementById('btn-back').style.visibility = state.stepIdx===0?'hidden':'visible';
+  const nb=document.getElementById('btn-next');
+  if(state.done){nb.style.display='none';document.getElementById('btn-back').style.display='none';}
+  else if(state.stepIdx===totalSteps()-1){nb.textContent='PAY & LAUNCH 🚀';}
+  else{nb.textContent='NEXT →';}
+}
+
+function renderStep(){
+  const c=document.getElementById('step-container');
+  c.innerHTML='';c.className='fade-in';void c.offsetWidth;
+  if(state.done){renderDone(c);renderProgress();renderPreview();return;}
+  if(state.stepIdx===QUESTIONS.length){renderCheckout(c);renderProgress();renderPreview();return;}
+  const q = QUESTIONS[state.stepIdx];
+  const head=document.createElement('div');
+  head.innerHTML=`<div class="step-head"><span class="step-num">${String(state.stepIdx+1).padStart(2,'0')}</span><span class="step-kicker">${q.kicker}</span></div><div class="question">${q.q}</div><div class="help">${q.help}</div>`;
+  c.appendChild(head);
+
+  if(q.type==='choice'){
+    const grid=document.createElement('div');grid.className='options'+(q.options.length>=6?' three':'');
+    q.options.forEach(o=>{
+      const el=document.createElement('div');
+      el.className='opt'+(state.answers[q.key]===o.value?' selected':'');
+      el.innerHTML=`<span class="emoji">${o.emoji}</span><div class="label">${o.label}</div><div class="sub">${o.sub}</div>`;
+      el.onclick=()=>{state.answers[q.key]=o.value;renderStep();renderPreview();};
+      grid.appendChild(el);
+    });
+    c.appendChild(grid);
+  }
+  else if(q.type==='multi'){
+    const grid=document.createElement('div');grid.className='options three';
+    const cur=state.answers[q.key]||[];
+    q.options.forEach(o=>{
+      const el=document.createElement('div');
+      el.className='opt'+(cur.includes(o.value)?' selected':'');
+      el.innerHTML=`<span class="emoji">${o.emoji}</span><div class="label">${o.label}</div>`;
+      el.onclick=()=>{
+        const arr=state.answers[q.key]||[];const i=arr.indexOf(o.value);
+        if(i>=0) arr.splice(i,1); else arr.push(o.value);
+        state.answers[q.key]=arr;renderStep();renderPreview();
+      };
+      grid.appendChild(el);
+    });
+    c.appendChild(grid);
+  }
+  else if(q.type==='text'){
+    const inp=document.createElement('input');inp.className='text-input';
+    inp.placeholder=q.placeholder||'';inp.value=state.answers[q.key]||'';
+    inp.oninput=e=>{state.answers[q.key]=e.target.value;renderPreview();};
+    inp.onkeydown=e=>{if(e.key==='Enter')next();};
+    c.appendChild(inp);setTimeout(()=>inp.focus(),60);
+  }
+  else if(q.type==='textarea'){
+    const ta=document.createElement('textarea');
+    ta.placeholder=q.placeholder||'';ta.value=state.answers[q.key]||'';
+    ta.oninput=e=>{state.answers[q.key]=e.target.value;renderPreview();};
+    c.appendChild(ta);setTimeout(()=>ta.focus(),60);
+  }
+  else if(q.type==='palette'){
+    const grid=document.createElement('div');grid.className='palette-grid';
+    q.options.forEach(p=>{
+      const el=document.createElement('div');
+      el.className='pal'+(state.answers[q.key]===p.value && !state.answers.customColors?' selected':'');
+      el.innerHTML=`<div class="swatches">${p.colors.map(c=>`<span style="background:${c}"></span>`).join('')}</div><div class="name">${p.name}</div><div class="mood">${p.mood}</div>`;
+      el.onclick=()=>{state.answers[q.key]=p.value;state.answers.customColors=null;renderStep();renderPreview();};
+      grid.appendChild(el);
+    });
+    c.appendChild(grid);
+
+    const custom=currentPalette();
+    const cp=document.createElement('div');cp.className='custom-palette';
+    cp.innerHTML=`<div class="cp-title">OR — PICK YOUR OWN COLORS ↓</div>
+      <div class="cp-row">${['Accent 1','Accent 2','Background','Text'].map((lbl,i)=>`
+        <div class="cp-swatch"><input type="color" data-idx="${i}" value="${custom[i]}"><div>${lbl}</div></div>
+      `).join('')}</div>`;
+    c.appendChild(cp);
+    cp.querySelectorAll('input[type=color]').forEach(inp=>{
+      inp.oninput=e=>{
+        const idx=parseInt(e.target.dataset.idx,10);
+        const colors=currentPalette().slice();colors[idx]=e.target.value;
+        state.answers.customColors=colors;state.answers.palette='custom';
+        document.querySelectorAll('.pal').forEach(p=>p.classList.remove('selected'));
+        renderPreview();
+      };
+    });
+  }
+  else if(q.type==='contact'){
+    const wrap=document.createElement('div');wrap.style.display='grid';wrap.style.gap='10px';
+    wrap.innerHTML=`<input class="text-input" id="f-name" placeholder="Your name" value="${state.answers.fullName||''}"><input class="text-input" id="f-email" type="email" placeholder="you@email.com" value="${state.answers.email||''}">`;
+    c.appendChild(wrap);
+    setTimeout(()=>{
+      document.getElementById('f-name').oninput=e=>state.answers.fullName=e.target.value;
+      document.getElementById('f-email').oninput=e=>state.answers.email=e.target.value;
+      document.getElementById('f-name').focus();
+    },50);
+  }
+  renderProgress();renderPreview();
+}
+
+function renderCheckout(c){
+  const a=state.answers;
+  const q=k=>QUESTIONS.find(x=>x.key===k);
+  const labelFor=(key,val)=>{const def=q(key);if(!def||!def.options)return val;const opt=def.options.find(o=>o.value===val);return opt?opt.label:val;};
+  const multiLabel=key=>{const v=a[key]||[];return v.map(x=>labelFor(key,x)).join(', ')||'—';};
+
+  c.innerHTML=`
+    <div class="step-head"><span class="step-num">${String(QUESTIONS.length+1).padStart(2,'0')}</span><span class="step-kicker">CHECKOUT</span></div>
+    <div class="question">Here's the brief. Look good?</div>
+    <div class="help">The preview on the right is an actual render of your site.</div>
+    <div class="summary">
+      <div class="sum-item"><div class="k">Name</div><div class="v">${a.name||'—'}</div></div>
+      <div class="sum-item"><div class="k">Type</div><div class="v">${labelFor('purpose',a.purpose)||'—'}</div></div>
+      <div class="sum-item full"><div class="k">What you do</div><div class="v">${a.tagline||'—'}</div></div>
+      <div class="sum-item"><div class="k">Style</div><div class="v">${labelFor('vibe',a.vibe)||'—'}</div></div>
+      <div class="sum-item"><div class="k">Palette</div><div class="v">${a.customColors?'Custom':labelFor('palette',a.palette)||'—'}</div></div>
+      <div class="sum-item"><div class="k">Pages</div><div class="v">${multiLabel('pages')}</div></div>
+      <div class="sum-item"><div class="k">Extras</div><div class="v">${multiLabel('features')}</div></div>
+    </div>
+    <div class="checkout-box">
+      <h3>PICK A PLAN</h3>
+      <div class="tier-row" id="tier-row"></div>
+      <div class="fine">Testing mode — no real payment is processed.</div>
+    </div>`;
+  const row=c.querySelector('#tier-row');
+  TIERS.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='tier'+(state.tier===t.id?' selected':'');
+    el.innerHTML=`<div class="tname">${t.name}${t.featured?' ★':''}</div><div class="tprice">$${t.price}<small> ${t.sub}</small></div><ul>${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>`;
+    el.onclick=()=>{state.tier=t.id;renderStep();};
+    row.appendChild(el);
+  });
+}
+
+function renderDone(c){
+  const tier=TIERS.find(t=>t.id===state.tier);
+  const orderId='BLDR-'+Math.random().toString(36).slice(2,8).toUpperCase();
+  c.innerHTML=`
+    <div class="done-screen">
+      <div class="huge">LET'S<br/>GO.</div>
+      <p style="margin-top:16px;max-width:440px;margin-left:auto;margin-right:auto;font-size:15px;line-height:1.6;">Thanks ${state.answers.fullName?state.answers.fullName.split(' ')[0]:'friend'}! A designer will email <strong>${state.answers.email||'you'}</strong> within 24 hours.</p>
+      <div class="receipt">
+        <div class="rtitle">ORDER RECEIPT</div>
+        <div class="rline"><span>Order #</span><span>${orderId}</span></div>
+        <div class="rline"><span>Plan</span><span>${tier.name}</span></div>
+        <div class="rline"><span>Project</span><span>${state.answers.name||'—'}</span></div>
+        <div class="rline"><span>Turnaround</span><span>48 hours</span></div>
+        <div class="rtotal"><span>TOTAL</span><span>$${tier.price}.00</span></div>
+      </div>
+      <button class="btn primary" style="margin-top:20px;" onclick="reset()">BUILD ANOTHER</button>
+    </div>`;
+}
+
+function startBuilder(){document.getElementById('builder').scrollIntoView({behavior:'smooth'});}
+function canAdvance(){
+  if(state.stepIdx===QUESTIONS.length) return true;
+  const q=QUESTIONS[state.stepIdx];const v=state.answers[q.key];
+  if(q.type==='choice') return !!v;
+  if(q.type==='palette') return !!v || !!state.answers.customColors;
+  if(q.type==='multi') return Array.isArray(v)&&v.length>0;
+  if(q.type==='text'||q.type==='textarea') return v&&v.trim().length>0;
+  if(q.type==='contact') return state.answers.fullName&&state.answers.email&&/@/.test(state.answers.email);
+  return true;
+}
+function next(){
+  if(!canAdvance()){
+    const b=document.getElementById('btn-next');
+    b.animate([{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:280});
+    return;
+  }
+  if(state.stepIdx===QUESTIONS.length){state.done=true;renderStep();return;}
+  state.stepIdx++;renderStep();
+}
+function back(){if(state.stepIdx>0){state.stepIdx--;renderStep();}}
+function reset(){state.stepIdx=0;state.answers={customColors:null};state.tier='pro';state.done=false;renderStep();renderPreview();}
+
+renderStep();
+</script>
+</body>
+</html>
